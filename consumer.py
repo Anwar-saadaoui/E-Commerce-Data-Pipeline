@@ -37,33 +37,24 @@ batch = []
 def process_batch(records):
     df_pandas = pd.DataFrame(records)
 
-    # Create Snowpark DataFrame from pandas
+    # Rename columns to uppercase first
+    df_pandas.columns = [
+        "INVOICE_NO", "STOCK_CODE", "DESCRIPTION", "QUANTITY",
+        "INVOICE_DATE", "UNIT_PRICE", "CUSTOMER_ID", "COUNTRY"
+    ]
+
+    # Add computed columns
+    df_pandas["LINE_REVENUE"] = (df_pandas["QUANTITY"] * df_pandas["UNIT_PRICE"]).round(2)
+    df_pandas["IS_RETURN"]    = df_pandas["QUANTITY"] < 0
+    df_pandas["INGESTED_AT"]  = pd.Timestamp.now()
+
+    # Filter zero quantity
+    df_pandas = df_pandas[df_pandas["QUANTITY"] != 0]
+
+    # Create Snowpark DataFrame and write
     df = session.create_dataframe(df_pandas)
-
-    # ── Transformations with Snowpark ──────────────────────────
-    df = (
-        df
-        .with_column("LINE_REVENUE",
-            (col('"Quantity"') * col('"UnitPrice"')).cast("float"))
-        .with_column("IS_RETURN",
-            when(col('"Quantity"') < 0, lit(True)).otherwise(lit(False)))
-        .with_column("INGESTED_AT", current_timestamp())
-        .filter(col('"Quantity"') != 0)
-        .rename({
-            '"InvoiceNo"':   "INVOICE_NO",
-            '"StockCode"':   "STOCK_CODE",
-            '"Description"': "DESCRIPTION",
-            '"Quantity"':    "QUANTITY",
-            '"InvoiceDate"': "INVOICE_DATE",
-            '"UnitPrice"':   "UNIT_PRICE",
-            '"CustomerID"':  "CUSTOMER_ID",
-            '"Country"':     "COUNTRY",
-        })
-    )
-
-    # Write to Snowflake
     df.write.mode("append").save_as_table("RETAIL_INVOICES")
-    print(f"✅ Batch of {len(records)} rows written to Snowflake")
+    print(f"✅ Batch of {len(df_pandas)} rows written to Snowflake")
 
 
 for message in consumer:
