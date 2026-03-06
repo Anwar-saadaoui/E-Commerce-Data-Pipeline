@@ -190,7 +190,3 @@ LIMIT 20;
 - Snowflake account identifier must include the cloud region (e.g. `ES06337.aws`)
 
 ---
-
-## License
-
-MIT
