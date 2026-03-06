@@ -66,8 +66,8 @@ UK-based online retail transactions dataset with the following columns:
 ### 1. Clone the repo
 
 ```bash
-git clone https://github.com/your-username/e-commerce-pipeline.git
-cd e-commerce-pipeline
+git clone https://github.com/Anwar-saadaoui/E-Commerce-Data-Pipeline.git
+cd E-Commerce-Data-Pipeline
 ```
 
 ### 2. Install dependencies
