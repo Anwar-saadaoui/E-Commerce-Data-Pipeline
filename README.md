@@ -187,6 +187,6 @@ LIMIT 20;
 
 - `kafka-python` is incompatible with Python 3.13 — use `kafka-python-ng` instead
 - CSV must be encoded as `latin-1` due to special characters in product descriptions
-- Snowflake account identifier must include the cloud region (e.g. `ES06337.aws`)
+- Snowflake account identifier must include the cloud region (e.g. `ES96342.aws`)
 
 ---
